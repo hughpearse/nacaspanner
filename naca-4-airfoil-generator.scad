@@ -2,15 +2,15 @@
  * OpenScad script to generate upper and lower airfoil
  * values based on 4-digit series NACA codes, spanning 1m
  * Author: Hugh Pearse
- */ 
+ */
+/****************************************/
 m = 0.02;//max camber
+p = 0.4;//location of max camber
 pc = 0.4;//location of max camber, normalized
 t = 0.12;//thickness
 c = 1;//chord length
-p = 0.4;//location of max camber
-
-
-x_increment = 0.025;
+/****************************************/
+x_increment = 0.01;
 pi = 3.141592653589793238;
 
 function sublist(list, from=0, to) =
@@ -71,9 +71,9 @@ function lower_point(x) = [
     )
 ];
 
-function upper_points(void) = [for (x=[0.0 : x_increment : 1.0]) upper_point(x)];
+function upper_points(void) = [for (x=[0.0 : x_increment : c]) upper_point(x)];
 
-function lower_points(void) = [for (x=[0.0 : x_increment : 1.0]) lower_point(x)];
+function lower_points(void) = [for (x=[0.0 : x_increment : c]) lower_point(x)];
 
 function pair_array(a, i=0) = [for (x=[0:2:len(a)])
         len(a) > i ?
