@@ -3,14 +3,27 @@
  * values based on 4-digit series NACA codes, spanning 1m
  * Author: Hugh Pearse
  */ 
-c = 1;//chord length
-t = 0.1;//thickness
-p = 0.4;//location of max camber
-m = 0.04;//max camber
+m = 0.02;//max camber
 pc = 0.4;//location of max camber, normalized
+t = 0.12;//thickness
+c = 1;//chord length
+p = 0.4;//location of max camber
 
-x_increment = 0.01;
+
+x_increment = 0.025;
 pi = 3.141592653589793238;
+
+function sublist(list, from=0, to) =
+    from>to ?
+	[] :
+    	let( end = to==undef ? len(list)-1 : to )
+    	[ for(i=[from:end]) list[i] ] ;
+
+function reverse(a, i=0) =
+    len(a) > i ?
+        concat(reverse(sublist(a,1), i+1), a[0]) :
+        []
+;
 
 function calc_y(t,c,x) = t/0.2*c*(0.2969*sqrt(x/c)-0.126*(x/c)-0.3516*pow((x/c),2)+0.2843*pow((x/c),3)-0.1015*pow((x/c),4));
 
@@ -62,11 +75,19 @@ function upper_points(void) = [for (x=[0.0 : x_increment : 1.0]) upper_point(x)]
 
 function lower_points(void) = [for (x=[0.0 : x_increment : 1.0]) lower_point(x)];
 
+function pair_array(a, i=0) = [for (x=[0:2:len(a)])
+        len(a) > i ?
+        pair_array(concat(sublist(a,x,x+1), a), i+1):
+        []
+    ];
+
 upper_points_array = upper_points();
 lower_points_array = lower_points();
 
-airfoil = concat(upper_points_array, lower_points_array);
+reversed_lower_array = reverse(lower_points_array);
+reversed_lower_points_array = [ for (a =[0:2:len(reversed_lower_array)-1]) sublist(reversed_lower_array,a,a+1) ];
+echo(reversed_lower_points_array);
+
+airfoil = concat(upper_points_array, reversed_lower_points_array);
 
 polygon(points = airfoil);
-echo(airfoil);
-
